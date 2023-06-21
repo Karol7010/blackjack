@@ -1,4 +1,5 @@
 import random
+import os
 
 class card:
     def __init__(self, value, color):
@@ -33,16 +34,13 @@ class player():
         self.cards = []
         self.score = 0
         self.name = name
-    def hit(self, cards_in_deck):
-        i = random.randint(0,len(cards_in_deck))
-        card_drawed = cards_in_deck[i]
-        cards_in_deck.remove(card_drawed)
-        self.cards.append(card_drawed)
-        return card_drawed
     def start(self, cards_in_deck):
         self.hit(cards_in_deck)
         self.hit(cards_in_deck)
+        self.calc_score()
+        print(f"You've drawned your first two cards: {self.cards}, you have {self.score} points")
     def calc_score(self):
+        self.score = 0
         for i in self.cards:
             if type(i.value) == type(8):
                 self.score += i.value
@@ -54,6 +52,17 @@ class player():
                     self.score += 1
                 else:
                     self.score += 10
+    def hit(self, cards_in_deck):
+        i = random.randint(0,len(cards_in_deck))
+        card_drawed = cards_in_deck[i]
+        cards_in_deck.remove(card_drawed)
+        self.cards.append(card_drawed)
+        return card_drawed
+
+    def my_turn(self):
+        menu_1 = input("What would you like to do, hit or stand?\n")
+
+
 
     def __repr__(self):
         return self.name
@@ -61,59 +70,31 @@ class player():
 class croupier(player):
     def __init__(self, name):
         super().__init__(name)
+
+    def start(self, cards_in_deck):
+        self.hit(cards_in_deck)
+        self.hit(cards_in_deck)
+        self.calc_score()
+        print(f"The croupier draws two cards, one of which is: {self.cards[0]}")
     def my_turn(self):
         pass
 
-class bot(player):
-    def __init__(self, name):
-        super().__init__(name)
-        self.name
-    def my_turn(self):
-        pass
-
+def scoreboard(players):
+    print(f"SCOREBOARD:")
+    for i in players:
+        print(f"*{i.name} has {i.score} points")
 def game(nb_of_bots):
     deck1 = deck()
     deck1.new_deck()
-    player_1 = player(input(f"Input name for player: "))
+    player_1 = player('player_1')
     croupier_0 = croupier('croupier_0')
     players = [croupier_0, player_1]
-    for i in range(nb_of_bots):
-        temp = 'bot_'+str(i)
-        globals()[temp] = player(temp)
-        players.append(globals()[temp])
-    print("===============================================\nStart of the game, drawing two cards: ")
-    for i in players:
-        i.start(deck1.cards)
-    print(player_1.cards)
-    print(f"Croupier draws two cards, one of which is: \n{croupier_0.cards}")
-    print("===============================================\nCurrent score:")
-    for i in players:
-        i.calc_score()
-        print(f"*{i.name}: {i.score}")
-    menu_1 = ''
-    print("===============================================")
+    print("START OF THE GAME")
+    for guy in players:
+        guy.start(deck1.cards)
     while True:
-        winners = []
-        for i in players:       #checking if anyone won
-            if i.score == 21:
-                winners.append(i.name)
-            elif i.score>21:
-                pass    #tu skończyłem
 
 
-
-        if len(winners)>0:
-            return winners
-        menu_1 = input("What would you like to do:\n*hit\nstand (end game)")
-        match menu_1:
-            case 'hit':
-                player_1.hit(deck1.cards)
-            case 'stand':
-                continue
-            case 'exit':
-                continue
-            case _:
-                print("Unknown command, please type 'hit', 'stand', or 'exit':")
 
 
 if __name__ == "__main__":
